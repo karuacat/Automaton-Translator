@@ -32,7 +32,7 @@ AUTOMATA-TRANSLATOR/
 └── bin/               # Compiled files (.class) - [Generated]
 ```
 
-## 🚀 Installation and Running
+## ⚙️ Installation and Running
 
 ### Prerequisites
 - Java JDK 8 or higher installed (check with `javac -version`).
@@ -49,8 +49,44 @@ javac -d bin (Get-ChildItem -Recurse *.java)
 mkdir -p bin
 javac -d bin $(find . -name "*.java")
 ```
-
 ### Running
 ```powershell
 java -cp bin Main
 ```
+# 📌 Automata Translator – Roadmap
+
+This roadmap shows the planned features and improvements for **Automata Translator**, with a quick visual status.
+
+Legend:  
+![To Do](https://img.shields.io/badge/To%20Do-🔲-lightgrey)  
+![In Progress](https://img.shields.io/badge/In%20Progress-⏳-orange)  
+![Done](https://img.shields.io/badge/Done-✅-green)
+
+---
+
+## Version 1.1 – Automaton Analysis & Transformation
+- ![To Do](https://img.shields.io/badge/To%20Do-🔲-lightgrey) Check if a word belongs to an automaton (word simulation)  
+- ![To Do](https://img.shields.io/badge/To%20Do-🔲-lightgrey) Convert a **regular expression** into a finite automaton  
+- ![To Do](https://img.shields.io/badge/To%20Do-🔲-lightgrey) Determinize (transform a non-deterministic automaton into a deterministic one)  
+- ![To Do](https://img.shields.io/badge/To%20Do-🔲-lightgrey) Minimize a finite automaton
+
+## Version 1.2 – Export & Visualization
+- ![To Do](https://img.shields.io/badge/To%20Do-🔲-lightgrey) Download an **image of the automaton** created (PNG or SVG)  
+- ![To Do](https://img.shields.io/badge/To%20Do-🔲-lightgrey) Export and import automata in JSON or XML format  
+- ![To Do](https://img.shields.io/badge/To%20Do-🔲-lightgrey) Undo/Redo for editor actions
+
+## Version 1.3 – Languages & Advanced Automata
+- ![To Do](https://img.shields.io/badge/To%20Do-🔲-lightgrey) Support **infinite-word automata** (ω-automata)  
+- ![To Do](https://img.shields.io/badge/To%20Do-🔲-lightgrey) Convert between different **acceptance conditions** (e.g., final states, Büchi conditions)  
+- ![To Do](https://img.shields.io/badge/To%20Do-🔲-lightgrey) Determine whether an automaton represents a **finite or infinite language**  
+- ![To Do](https://img.shields.io/badge/To%20Do-🔲-lightgrey) Display the **language represented** when manually creating an automaton
+
+## Future Ideas / Possible Improvements
+- ![To Do](https://img.shields.io/badge/To%20Do-🔲-lightgrey) Animate transitions when testing a word  
+- ![To Do](https://img.shields.io/badge/To%20Do-🔲-lightgrey) Advanced support for non-deterministic automata with ε-transitions  
+- ![To Do](https://img.shields.io/badge/To%20Do-🔲-lightgrey) Automatic validation of automaton completeness and consistency  
+- ![To Do](https://img.shields.io/badge/To%20Do-🔲-lightgrey) Suggestion system to fix invalid automata  
+- ![To Do](https://img.shields.io/badge/To%20Do-🔲-lightgrey) “Teacher mode” to show step-by-step why a word is accepted or rejected  
+- ![To Do](https://img.shields.io/badge/To%20Do-🔲-lightgrey) Support for **pushdown automata (PDA)** for more complex languages  
+- ![To Do](https://img.shields.io/badge/To%20Do-🔲-lightgrey) Customizable graphical themes for the canvas  
+- ![To Do](https://img.shields.io/badge/To%20Do-🔲-lightgrey) Version history for automata to compare modifications
