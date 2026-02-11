@@ -25,7 +25,11 @@ public class AutomatonPanel extends JPanel {
         this.automaton = automaton;
         this.selectedState = null;
         this.translationState = null;
+
+        this.setLayout(new BorderLayout());
         setBackground(Color.WHITE);
+
+        setupTestBar();
 
         MouseAdapter mouseHandler = new MouseAdapter() {
 
@@ -218,6 +222,8 @@ public class AutomatonPanel extends JPanel {
         };
         addMouseListener(mouseHandler);
         addMouseMotionListener(mouseHandler);
+
+        this.setFocusable(true);
     }
 
     @Override
@@ -437,5 +443,53 @@ public class AutomatonPanel extends JPanel {
             }
         }
         return null;
+    }
+
+    private void setupTestBar() {
+        JPanel testBar = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 10));
+        testBar.setOpaque(false); 
+
+        JTextField wordInput = new JTextField(12);
+        wordInput.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        
+        JButton testButton = new JButton("Test word");
+        
+        JLabel resLabel = new JLabel("Status: Waiting");
+        resLabel.setFont(new Font("SansSerif", Font.BOLD, 12));
+        resLabel.setOpaque(true);
+        resLabel.setBackground(new Color(245, 245, 245));
+        resLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+
+        testButton.addActionListener(e -> {
+            String word = wordInput.getText().trim();
+            if (word.equals("ε") || word.equalsIgnoreCase("eps")) word = "";
+            
+            boolean accepted = automaton.accepts(word);
+            
+            if (accepted) {
+                resLabel.setText("✅ WORD ACCEPTED");
+                resLabel.setBackground(new Color(200, 255, 200));
+                resLabel.setForeground(new Color(0, 100, 0));
+            } else {
+                resLabel.setText("❌ WORD REJECTED");
+                resLabel.setBackground(new Color(255, 200, 200));
+                resLabel.setForeground(new Color(150, 0, 0));
+            }
+            this.repaint();
+        });
+
+        wordInput.addActionListener(e -> testButton.doClick());
+
+        JPanel glassPanel = new JPanel();
+        glassPanel.setBackground(new Color(255, 255, 255, 200));
+        glassPanel.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)));
+        glassPanel.add(new JLabel("Word:"));
+        glassPanel.add(wordInput);
+        glassPanel.add(testButton);
+        glassPanel.add(resLabel);
+
+        testBar.add(glassPanel);
+        
+        this.add(testBar, BorderLayout.NORTH);
     }
 }
