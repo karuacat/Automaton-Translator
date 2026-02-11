@@ -28,14 +28,26 @@ A graphical editor for finite automata developed in Java Swing. This project all
 AUTOMATA-TRANSLATOR/
 ├── Affichage/         # Classes related to the graphical interface (GUI)
 ├── Automaton/         # Business logic (States, Transitions, Automaton)
+├── bin/               # Compiled files (.class) - [Generated]
+├── release/           # Release JARs
+│   └── AutomataTranslator-v1.0.jar
+├── build-release.ps1  # Build & release script
+├── LICENSE
 ├── Main.java          # Application entry point
-└── bin/               # Compiled files (.class) - [Generated]
+└── README.md
 ```
 
 ## ⚙️ Installation and Running
 
 ### Prerequisites
 - Java JDK 8 or higher installed (check with `javac -version`).
+
+### Run the released JAR (recommended)
+
+Download the latest release from the GitHub Releases page, then:
+```
+java -jar release\AutomataTranslator-v1.0.jar
+```
 
 ### Compilation (Windows PowerShell)
 ```powershell
@@ -63,6 +75,12 @@ Legend:
 ![Done](https://img.shields.io/badge/Done-✅-green)
 
 ---
+
+## Version 1.0 – Initial Release ✅
+- Graphical editor for finite automata
+- Support for epsilon (ε) transitions
+- Context menu: initial/accepting states, delete states/transitions
+- Save JAR ready for use (release/AutomataTranslator-v1.0.jar)
 
 ## Version 1.1 – Automaton Analysis & Transformation
 - ![To Do](https://img.shields.io/badge/To%20Do-🔲-lightgrey) Check if a word belongs to an automaton (word simulation)  
