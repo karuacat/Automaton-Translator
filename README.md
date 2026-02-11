@@ -83,9 +83,9 @@ Legend:
 - Save JAR ready for use (release/AutomataTranslator-v1.0.jar)
 
 ## Version 1.1 – Automaton Analysis & Transformation
-- ![To Do](https://img.shields.io/badge/To%20Do-🔲-lightgrey) Check if a word belongs to an automaton (word simulation)  
-- ![To Do](https://img.shields.io/badge/To%20Do-🔲-lightgrey) Convert a **regular expression** into a finite automaton  
-- ![To Do](https://img.shields.io/badge/To%20Do-🔲-lightgrey) Determinize (transform a non-deterministic automaton into a deterministic one)  
+- ![Done](https://img.shields.io/badge/Done-✅-green) Check if a word belongs to an automaton (word simulation)  
+- ![In Progress](https://img.shields.io/badge/In%20Progress-⏳-orange) Convert a **regular expression** into a finite automaton  
+- ![In Progress](https://img.shields.io/badge/In%20Progress-⏳-orange) Determinize (transform a non-deterministic automaton into a deterministic one)  
 - ![To Do](https://img.shields.io/badge/To%20Do-🔲-lightgrey) Minimize a finite automaton
 
 ## Version 1.2 – Export & Visualization
