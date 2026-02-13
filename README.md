@@ -84,7 +84,7 @@ Legend:
 
 ## Version 1.1 – Automaton Analysis & Transformation
 - ![Done](https://img.shields.io/badge/Done-✅-green) Check if a word belongs to an automaton (word simulation)  
-- ![In Progress](https://img.shields.io/badge/In%20Progress-⏳-orange) Convert a **regular expression** into a finite automaton  
+- ![Done](https://img.shields.io/badge/Done-✅-green) Convert a **regular expression** into a finite automaton  
 - ![In Progress](https://img.shields.io/badge/In%20Progress-⏳-orange) Determinize (transform a non-deterministic automaton into a deterministic one)  
 - ![To Do](https://img.shields.io/badge/To%20Do-🔲-lightgrey) Minimize a finite automaton
 
