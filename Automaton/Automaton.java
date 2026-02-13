@@ -32,8 +32,28 @@ public class Automaton {
         this.states.add(state);
     }
 
+    public void addState(List<State> states) { 
+        this.states.addAll(states);
+    }
+
+    public void addTranslation(State from, State to, String symbol) {
+        this.translations.add(new Translation(symbol, from, to));
+    }
+
+    public void addTranslation(List<Translation> translations) {
+        this.translations.addAll(translations);
+    }
+
     public int getStateCount() {
         return this.states.size();
+    }
+
+    public void removeAllStates() { 
+        this.states.clear();
+    }
+
+    public void removeAllTranslations() {
+        this.translations.clear();
     }
 
     public void removeState(State state) {
@@ -170,5 +190,88 @@ public class Automaton {
             }
         }
         return visited;
+    }
+
+    public void removeEpsilonTransitions() {
+        List<Translation> newTranslations = new ArrayList<>();
+        
+        for (State s : new ArrayList<>(this.states)) {
+            Set<State> startSet = new HashSet<>();
+            startSet.add(s);
+            Set<State> closure = getEpsilonClosure(startSet);
+            
+            for (State reachable : closure) {
+                if (reachable.isAccepting()) {
+                    s.setAccepting(true);
+                }
+                
+                for (Translation t : this.translations) {
+                    if (t.getFromState().equals(reachable) && !isEpsilon(t.getSymbol())) {
+                        newTranslations.add(new Translation(t.getSymbol(), s, t.getToState()));
+                    }
+                }
+            }
+        }
+
+        this.translations.clear();
+        this.translations.addAll(newTranslations);
+        
+        removeDuplicateTranslations();
+        removeUnreachableStates();
+        reorderStates();
+    }
+
+    private boolean isEpsilon(String sym) {
+        return sym == null || sym.equals("ε") || sym.equals("eps") || sym.equals("...");
+    }
+
+    public void removeDuplicateTranslations() {
+        List<Translation> uniqueTranslations = new ArrayList<>();
+
+        for (Translation t : this.translations) {
+            boolean found = false;
+            for (Translation u : uniqueTranslations) {
+                if (u.getFromState().equals(t.getFromState()) && u.getToState().equals(t.getToState())) {
+                    u.addSymbol(t.getSymbol());
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                uniqueTranslations.add(new Translation(t.getSymbol(), t.getFromState(), t.getToState()));
+            }
+        }
+        this.translations = uniqueTranslations;
+    }
+
+    public void removeUnreachableStates() {
+        if (states.isEmpty()) return;
+
+        Set<State> reachable = new HashSet<>();
+        Stack<State> stack = new Stack<>();
+
+        for (State s : states) {
+            if (s.isInitial()) {
+                stack.push(s);
+                reachable.add(s);
+                break;
+            }
+        }
+
+        while (!stack.isEmpty()) {
+            State current = stack.pop();
+            for (Translation t : translations) {
+                if (t.getFromState().equals(current)) {
+                    if (!reachable.contains(t.getToState())) {
+                        reachable.add(t.getToState());
+                        stack.push(t.getToState());
+                    }
+                }
+            }
+        }
+
+        this.states.retainAll(reachable);
+        
+        this.translations.removeIf(t -> !reachable.contains(t.getFromState()) || !reachable.contains(t.getToState()));
     }
 }

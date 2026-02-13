@@ -7,6 +7,13 @@ public class State {
     private int x;
     private int y;
 
+    public State() {
+        this.name = "";
+        this.initial = false; 
+        this.accepting = false; 
+        this.x = 0; 
+        this.y = 0; }
+
     public State(String name, boolean initial, boolean accepting, int x, int y  ) {
         this.name = name;
         this.initial = initial;

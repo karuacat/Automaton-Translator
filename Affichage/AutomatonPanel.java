@@ -8,6 +8,8 @@ import java.awt.geom.QuadCurve2D;
 import javax.swing.*;
 
 import Automaton.*;
+import Thompson.*;
+import Regex.*;
 
 public class AutomatonPanel extends JPanel {
     private Automaton automaton;
@@ -25,11 +27,16 @@ public class AutomatonPanel extends JPanel {
         this.automaton = automaton;
         this.selectedState = null;
         this.translationState = null;
+        Point mousePos = MouseInfo.getPointerInfo().getLocation();
+        SwingUtilities.convertPointFromScreen(mousePos, this);
+        this.mouseX = mousePos.x;
+        this.mouseY = mousePos.y;
 
         this.setLayout(new BorderLayout());
         setBackground(Color.WHITE);
 
         setupTestBar();
+        setupRegexBar();
 
         MouseAdapter mouseHandler = new MouseAdapter() {
 
@@ -163,7 +170,7 @@ public class AutomatonPanel extends JPanel {
                                         if (existing != null) {
                                             existing.addSymbol(cleanedInput);
                                         } else {
-                                            automaton.getTranslations().add(new Translation(cleanedInput, translationState, s));
+                                            automaton.addTranslation(translationState, s, cleanedInput);
                                         }
                                         repaint();
                                     }
@@ -265,7 +272,11 @@ public class AutomatonPanel extends JPanel {
             g.drawArc(xPos, yPos, loopSize, loopSize, -30, 240);
 
             drawArrowHead(g, x + 8, y - STATE_RADIUS, Math.PI / 3);
-            drawCenteredString(g, t.getSymbol(), x, yPos - 5);
+            String sym = t.getSymbol();
+            if (sym == null || sym.isEmpty() || sym.equals("eps")) {
+                sym = "ε";
+            }
+            drawCenteredString(g, sym, x, yPos - 5);
         } else {
             if (hasReverseTransition(from, to)) {
                 drawCurvedArrow(g, from, to, 40);
@@ -462,8 +473,10 @@ public class AutomatonPanel extends JPanel {
 
         testButton.addActionListener(e -> {
             String word = wordInput.getText().trim();
-            if (word.equals("ε") || word.equalsIgnoreCase("eps")) word = "";
-            
+            if (word.equals("ε") || word.equalsIgnoreCase("eps")) {
+                word = "";
+            }
+
             boolean accepted = automaton.accepts(word);
             
             if (accepted) {
@@ -492,4 +505,61 @@ public class AutomatonPanel extends JPanel {
         
         this.add(testBar, BorderLayout.NORTH);
     }
+
+    private void setupRegexBar() {
+        JPanel regexBar = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
+        regexBar.setOpaque(false);
+
+        JTextField regexInput = new JTextField(12);
+        regexInput.setFont(new Font("SansSerif", Font.PLAIN, 14));
+
+        JButton regexButton = new JButton("From Regex");
+
+        regexButton.addActionListener(e -> {
+            String regex = regexInput.getText().trim();
+            if (!regex.isEmpty()) {
+                String postfix = Parser.shuntingYard(regex);
+                Automaton a = Thompson.build(postfix);
+                a.removeEpsilonTransitions();
+                a.reorderStates();
+                automaton.removeAllStates();
+                automaton.removeAllTranslations();
+                layoutStatesInCircle(a.getStates());
+                automaton.addState(a.getStates());
+                automaton.addTranslation(a.getTranslations());
+                automaton.reorderStates();
+            }
+            this.repaint();
+        });
+
+        JPanel glassPanel = new JPanel();
+        glassPanel.setBackground(new Color(255, 255, 255, 200));
+        glassPanel.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)));
+        glassPanel.add(new JLabel("Regex:"));
+        glassPanel.add(regexInput);
+        glassPanel.add(regexButton);
+
+        regexBar.add(glassPanel);
+        
+        this.add(regexBar, BorderLayout.SOUTH);
+    }
+
+    private void layoutStatesInCircle(java.util.List<State> states) {
+        if (states.isEmpty()) {
+            return;
+        }
+        
+        int centerX = Math.max(getWidth() / 2, 400);
+        int centerY = Math.max(getHeight() / 2, 300);
+        int radius = Math.min(centerX, centerY) / 2;
+
+        for (int i = 0; i < states.size(); i++) {
+            double angle = 2 * Math.PI * i / states.size();
+            int x = (int) (centerX + radius * Math.cos(angle));
+            int y = (int) (centerY + radius * Math.sin(angle));
+            states.get(i).setX(x);
+            states.get(i).setY(y);
+        } 
+    } 
+
 }
