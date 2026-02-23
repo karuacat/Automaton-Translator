@@ -82,11 +82,11 @@ Legend:
 - Context menu: initial/accepting states, delete states/transitions
 - Save JAR ready for use (release/AutomataTranslator-v1.0.jar)
 
-## Version 1.1 – Automaton Analysis & Transformation
-- ![Done](https://img.shields.io/badge/Done-✅-green) Check if a word belongs to an automaton (word simulation)  
-- ![Done](https://img.shields.io/badge/Done-✅-green) Convert a **regular expression** into a finite automaton  
-- ![In Progress](https://img.shields.io/badge/In%20Progress-⏳-orange) Determinize (transform a non-deterministic automaton into a deterministic one)  
-- ![To Do](https://img.shields.io/badge/To%20Do-🔲-lightgrey) Minimize a finite automaton
+## Version 1.1 – Automaton Analysis & Transformation ✅
+- Check if a word belongs to an automaton (word simulation)  
+- Convert a **regular expression** into a finite automaton  
+- Determinize (transform a non-deterministic automaton into a deterministic one)  
+- Minimize a finite automaton
 
 ## Version 1.2 – Export & Visualization
 - ![To Do](https://img.shields.io/badge/To%20Do-🔲-lightgrey) Download an **image of the automaton** created (PNG or SVG)  
