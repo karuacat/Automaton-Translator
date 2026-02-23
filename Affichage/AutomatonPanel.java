@@ -19,6 +19,10 @@ public class AutomatonPanel extends JPanel {
     private int offsetY;
     private int mouseX;
     private int mouseY;
+    private JLabel detStatus;
+    private JLabel minStatus;
+    private JButton detBtn;
+    private JButton minBtn;
     
     private static final int STATE_RADIUS = 25;
     private static final int ARROW_SIZE = 10;
@@ -38,6 +42,8 @@ public class AutomatonPanel extends JPanel {
         setupTestBar();
         setupRegexBar();
 
+        refreshStatus();
+
         MouseAdapter mouseHandler = new MouseAdapter() {
 
             @Override
@@ -50,12 +56,14 @@ public class AutomatonPanel extends JPanel {
                     JMenuItem initialItem = new JMenuItem(s.isInitial() ? "Unset Initial" : "Set Initial");
                     initialItem.addActionListener(a -> {
                         s.setInitial(!s.isInitial());
+                        refreshStatus();
                         repaint();
                     });
 
                     JMenuItem acceptingItem = new JMenuItem(s.isAccepting() ? "Unset Accepting" : "Set Accepting");
                     acceptingItem.addActionListener(a -> {
                         s.setAccepting(!s.isAccepting());
+                        refreshStatus();
                         repaint();
                     });
 
@@ -64,6 +72,7 @@ public class AutomatonPanel extends JPanel {
                         automaton.removeState(s);
                         automaton.getTranslations().removeIf(t -> t.getFromState() == s || t.getToState() == s);
                         automaton.reorderStates();
+                        refreshStatus();
                         repaint();
                     });
 
@@ -85,6 +94,7 @@ public class AutomatonPanel extends JPanel {
                             JMenuItem deleteAll = new JMenuItem("Delete all (" + t.getSymbol() + ")");
                             deleteAll.addActionListener(a -> {
                                 automaton.getTranslations().remove(t);
+                                refreshStatus();
                                 repaint();
                             });
 
@@ -109,6 +119,7 @@ public class AutomatonPanel extends JPanel {
                                         if (t.hasNoSymbols()) {
                                             automaton.getTranslations().remove(t);
                                         }
+                                        refreshStatus();
                                         repaint();
                                     }
                                 }
@@ -172,11 +183,13 @@ public class AutomatonPanel extends JPanel {
                                         } else {
                                             automaton.addTranslation(translationState, s, cleanedInput);
                                         }
+                                        refreshStatus();
                                         repaint();
                                     }
                                 }
                             }
                             translationState = null;
+                            refreshStatus();
                             repaint();
                         } else {
                             selectedState = s;
@@ -199,6 +212,7 @@ public class AutomatonPanel extends JPanel {
 
                     selectedState.setX(e.getX() - offsetX);
                     selectedState.setY(e.getY() - offsetY);
+                    refreshStatus();
                     repaint();
                 }
             }
@@ -215,6 +229,7 @@ public class AutomatonPanel extends JPanel {
                     if (s == null) {
                         String nextName = automaton.getNextStateName();
                         automaton.addState(new State(nextName, false, false, e.getX(), e.getY()));
+                        refreshStatus();
                         repaint();
                     }
                 }
@@ -224,6 +239,7 @@ public class AutomatonPanel extends JPanel {
             public void mouseMoved(MouseEvent e) {
                 mouseX = e.getX();
                 mouseY = e.getY();
+                refreshStatus();
                 repaint();
             }
         };
@@ -275,6 +291,8 @@ public class AutomatonPanel extends JPanel {
             String sym = t.getSymbol();
             if (sym == null || sym.isEmpty() || sym.equals("eps")) {
                 sym = "ε";
+            } else {
+                sym = sym.replaceAll("\\s+", " ");
             }
             drawCenteredString(g, sym, x, yPos - 5);
         } else {
@@ -457,14 +475,18 @@ public class AutomatonPanel extends JPanel {
     }
 
     private void setupTestBar() {
-        JPanel testBar = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 10));
-        testBar.setOpaque(false); 
+        JPanel rightContainer = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 10));
+        rightContainer.setOpaque(false);
 
+        JPanel verticalStack = new JPanel();
+        verticalStack.setLayout(new BoxLayout(verticalStack, BoxLayout.Y_AXIS));
+        verticalStack.setOpaque(false);
+
+        JPanel testLine = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        testLine.setOpaque(false);
+        
         JTextField wordInput = new JTextField(12);
-        wordInput.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        
         JButton testButton = new JButton("Test word");
-        
         JLabel resLabel = new JLabel("Status: Waiting");
         resLabel.setFont(new Font("SansSerif", Font.BOLD, 12));
         resLabel.setOpaque(true);
@@ -473,37 +495,71 @@ public class AutomatonPanel extends JPanel {
 
         testButton.addActionListener(e -> {
             String word = wordInput.getText().trim();
-            if (word.equals("ε") || word.equalsIgnoreCase("eps")) {
-                word = "";
-            }
-
+            if (word.equals("ε") || word.equalsIgnoreCase("eps")) word = "";
             boolean accepted = automaton.accepts(word);
-            
             if (accepted) {
-                resLabel.setText("✅ WORD ACCEPTED");
+                resLabel.setText("✅ ACCEPTED");
                 resLabel.setBackground(new Color(200, 255, 200));
-                resLabel.setForeground(new Color(0, 100, 0));
             } else {
-                resLabel.setText("❌ WORD REJECTED");
+                resLabel.setText("❌ REJECTED");
                 resLabel.setBackground(new Color(255, 200, 200));
-                resLabel.setForeground(new Color(150, 0, 0));
             }
-            this.repaint();
+            refreshStatus();
+            repaint();
         });
 
-        wordInput.addActionListener(e -> testButton.doClick());
+        testLine.add(new JLabel("Word:"));
+        testLine.add(wordInput);
+        testLine.add(testButton);
+        testLine.add(resLabel);
 
-        JPanel glassPanel = new JPanel();
+        JPanel algoLine = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 5));
+        algoLine.setOpaque(false);
+
+        detBtn = new JButton("Determinize");
+        detStatus = new JLabel();
+        detStatus.setFont(new Font("SansSerif", Font.BOLD, 12));
+        detStatus.setOpaque(true);
+        detStatus.setBackground(new Color(245, 245, 245));
+        detStatus.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+
+        minBtn = new JButton("Minimize");
+        minStatus = new JLabel();
+        minStatus.setFont(new Font("SansSerif", Font.BOLD, 12));
+        minStatus.setOpaque(true);
+        minStatus.setBackground(new Color(245, 245, 245));
+        minStatus.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+
+        detBtn.addActionListener(e -> {
+            automaton.determinize();
+            layoutStatesInCircle(automaton.getStates());
+            refreshStatus();
+            repaint();
+        });
+
+        minBtn.addActionListener(e -> {
+            automaton.minimize();
+            layoutStatesInCircle(automaton.getStates());
+            refreshStatus();
+            repaint();
+        });
+
+        algoLine.add(detStatus);
+        algoLine.add(detBtn);
+        algoLine.add(new JLabel("  "));
+        algoLine.add(minStatus);
+        algoLine.add(minBtn);
+
+        verticalStack.add(testLine);
+        verticalStack.add(algoLine);
+        
+        JPanel glassPanel = new JPanel(new BorderLayout());
         glassPanel.setBackground(new Color(255, 255, 255, 200));
         glassPanel.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)));
-        glassPanel.add(new JLabel("Word:"));
-        glassPanel.add(wordInput);
-        glassPanel.add(testButton);
-        glassPanel.add(resLabel);
+        glassPanel.add(verticalStack);
 
-        testBar.add(glassPanel);
-        
-        this.add(testBar, BorderLayout.NORTH);
+        rightContainer.add(glassPanel);
+        this.add(rightContainer, BorderLayout.NORTH);
     }
 
     private void setupRegexBar() {
@@ -529,6 +585,7 @@ public class AutomatonPanel extends JPanel {
                 automaton.addTranslation(a.getTranslations());
                 automaton.reorderStates();
             }
+            refreshStatus();
             this.repaint();
         });
 
@@ -549,9 +606,12 @@ public class AutomatonPanel extends JPanel {
             return;
         }
         
-        int centerX = Math.max(getWidth() / 2, 400);
-        int centerY = Math.max(getHeight() / 2, 300);
-        int radius = Math.min(centerX, centerY) / 2;
+        int w = getWidth() > 0 ? getWidth() : 800;
+        int h = getHeight() > 0 ? getHeight() : 600;
+
+        int centerX = w / 2;
+        int centerY = h / 2;
+        int radius = Math.min(w, h) / 3;
 
         for (int i = 0; i < states.size(); i++) {
             double angle = 2 * Math.PI * i / states.size();
@@ -560,6 +620,18 @@ public class AutomatonPanel extends JPanel {
             states.get(i).setX(x);
             states.get(i).setY(y);
         } 
-    } 
+    }
+
+    private void refreshStatus() {
+        boolean isDet = automaton.isDeterministic();
+        detStatus.setText(isDet ? "● DET" : "○ N-DET");
+        detStatus.setForeground(isDet ? new Color(39, 174, 96) : new Color(231, 76, 60));
+        detBtn.setEnabled(!isDet); 
+
+        boolean isMin = automaton.isMinimized(); 
+        minStatus.setText(isMin ? "● MIN" : "○ N-MIN");
+        minStatus.setForeground(isMin ? new Color(39, 174, 96) : new Color(231, 76, 60));
+        minBtn.setEnabled(isDet && !isMin);
+    }
 
 }
